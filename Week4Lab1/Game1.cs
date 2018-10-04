@@ -22,7 +22,7 @@ namespace Week4Lab1
         private Texture2D _txDot;
         private SimpleSprite DotSprite;
         private SpriteFont GameFont;
-
+        float scale = 0.1f;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -45,8 +45,8 @@ namespace Week4Lab1
             GraphicsDevice.Viewport = originalViewPort;
             // Create the map viewport
             mapViewport.Bounds = new Rectangle(0, 0,
-                originalViewPort.Bounds.Width / 10,
-                originalViewPort.Bounds.Height / 10);
+                (int)(originalViewPort.Bounds.Width * scale),
+                (int)(originalViewPort.Bounds.Height * scale));
             mapViewport.X = 0;
             mapViewport.Y = 0;
             base.Initialize();
@@ -66,6 +66,7 @@ namespace Week4Lab1
             CharacterSprite = new SimpleSprite(_txCharacter, originalViewPort.Bounds.Center.ToVector2());
             _txDot = Content.Load<Texture2D>(@"Textures\body");
             DotSprite = new SimpleSprite(_txDot, mapViewport.Bounds.Center.ToVector2());
+
             GameFont = Content.Load<SpriteFont>(@"GameFont");
             // TODO: use this.Content to load your game content here
         }
@@ -91,7 +92,7 @@ namespace Week4Lab1
 
             // TODO: Add your update logic here
             float speed = 5.0f;
-            float scale = 0.01f;
+            //float scale = 0.01f;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             Vector2 perviousPos = CharacterSprite.Position;
@@ -107,7 +108,7 @@ namespace Week4Lab1
             if (!GraphicsDevice.Viewport.Bounds
                 .Contains(CharacterSprite.BoundingRect))
                 CharacterSprite.Move(perviousPos - CharacterSprite.Position);
-            DotSprite.Position = CharacterPosition * scale;
+            DotSprite.Position = CharacterPosition;
             DotSprite.text = DotSprite.Position.ToString();
             base.Update(gameTime);
         }
@@ -135,7 +136,7 @@ namespace Week4Lab1
             DotSprite.draw(spriteBatch, 0.1f);
             BackGroundSprite.draw(spriteBatch,mapViewport.Bounds);
             DotSprite.text = DotSprite.Position.ToString();
-            DotSprite.draw(spriteBatch, GameFont);
+            DotSprite.draw(spriteBatch,scale);
             //spriteBatch.Draw(_txDot, CharacterPosition * 0.1f,
             //                null, Color.White, 0f, Vector2.Zero, 0.1f, SpriteEffects.None, 0);
             //spriteBatch.Draw(_txBackGround, mapViewport.Bounds, Color.White);
