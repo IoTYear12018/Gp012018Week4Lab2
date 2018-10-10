@@ -58,6 +58,7 @@
     <Content Include="Content\Textures\backgroundImage.png" />
     <Content Include="Content\Textures\body.png" />
     <Content Include="Content\Textures\body2.png" />
+    <Content Include="Content\Textures\Frame.png" />
     <Content Include="Content\Textures\lips.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>

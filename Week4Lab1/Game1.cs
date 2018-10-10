@@ -19,9 +19,12 @@ namespace Week4Lab1
         private Texture2D _txBackGround;
         private SimpleSprite BackGroundSprite;
         Vector2 CharacterPosition = new Vector2(10, 10);
-        private Texture2D _txDot;
-        private SimpleSprite DotSprite;
+        Vector2 LipPosition = new Vector2(10, 10);
+        private Texture2D _txLips;
+        private SimpleSprite LipsSprite;
         private SpriteFont GameFont;
+        private SimpleSprite frameSprite;
+        Point previousMousePosition;
         float scale = 0.1f;
         public Game1()
         {
@@ -41,6 +44,9 @@ namespace Week4Lab1
         {
             // TODO: Add your initialization logic here
             // Sample the original Viewport
+            IsMouseVisible = true;
+            //graphics.IsFullScreen = true;
+            //graphics.ApplyChanges();
             originalViewPort = GraphicsDevice.Viewport;
             GraphicsDevice.Viewport = originalViewPort;
             // Create the map viewport
@@ -64,9 +70,11 @@ namespace Week4Lab1
             BackGroundSprite = new SimpleSprite(_txBackGround, Vector2.Zero);
             _txCharacter = Content.Load<Texture2D>(@"Textures\body2");
             CharacterSprite = new SimpleSprite(_txCharacter, originalViewPort.Bounds.Center.ToVector2());
-            _txDot = Content.Load<Texture2D>(@"Textures\body");
-            DotSprite = new SimpleSprite(_txDot, mapViewport.Bounds.Center.ToVector2());
-
+            _txLips = Content.Load<Texture2D>(@"Textures\lips");
+            LipsSprite = new SimpleSprite(_txLips, originalViewPort.Bounds.Center.ToVector2() + new Vector2(100,-100));
+            frameSprite = new 
+                SimpleSprite(Content.Load<Texture2D>(@"Textures\Frame")
+                , Vector2.Zero);
             GameFont = Content.Load<SpriteFont>(@"GameFont");
             // TODO: use this.Content to load your game content here
         }
@@ -96,7 +104,22 @@ namespace Week4Lab1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             Vector2 perviousPos = CharacterSprite.Position;
+            Vector2 perviousLipPosition = LipsSprite.Position;
+            
             // TODO: Add your update logic here
+            // Main character Movement
+
+            MouseState ms = Mouse.GetState();
+            if(mapViewport.Bounds.Contains(ms.Position))
+            {
+                if(ms.LeftButton == ButtonState.Pressed && previousMousePosition != ms.Position)
+                {
+                    Point p = ms.Position - previousMousePosition;
+                    mapViewport.X += p.X;
+                    mapViewport.Y += p.Y;
+                    //mapViewport.Bounds.Offset(p);
+                }
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
                 CharacterSprite.Move(new Vector2(-1, 0) * speed);
             if (Keyboard.GetState().IsKeyDown(Keys.D))
@@ -108,8 +131,21 @@ namespace Week4Lab1
             if (!GraphicsDevice.Viewport.Bounds
                 .Contains(CharacterSprite.BoundingRect))
                 CharacterSprite.Move(perviousPos - CharacterSprite.Position);
-            DotSprite.Position = CharacterPosition;
-            DotSprite.text = DotSprite.Position.ToString();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                LipsSprite.Move(new Vector2(-1, 0) * speed);
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                LipsSprite.Move(new Vector2(1, 0) * speed);
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                LipsSprite.Move(new Vector2(0, -1) * speed);
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                LipsSprite.Move(new Vector2(0, 1) * speed);
+            if (!GraphicsDevice.Viewport.Bounds
+                .Contains(LipsSprite.BoundingRect))
+                LipsSprite.Move(perviousLipPosition - LipsSprite.Position);
+
+            previousMousePosition = ms.Position;
+            LipsSprite.text = LipsSprite.Position.ToString();
             base.Update(gameTime);
         }
 
@@ -125,21 +161,20 @@ namespace Week4Lab1
             BackGroundSprite.draw(spriteBatch,originalViewPort.Bounds);
             CharacterSprite.text = CharacterSprite.Position.ToString();
             CharacterSprite.draw(spriteBatch, GameFont);
-            CharacterSprite.draw(spriteBatch);
+            LipsSprite.text = LipsSprite.Position.ToString();
+            LipsSprite.draw(spriteBatch, GameFont);
+            //CharacterSprite.draw(spriteBatch);
             //spriteBatch.Draw(_txBackGround, originalViewPort.Bounds, Color.White);
 
             //spriteBatch.Draw(_txCharacter, CharacterPosition, Color.White);
             spriteBatch.End();
             
             GraphicsDevice.Viewport = mapViewport;
-            spriteBatch.Begin();
-            DotSprite.draw(spriteBatch, 0.1f);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            frameSprite.draw(spriteBatch, mapViewport.Bounds);
             BackGroundSprite.draw(spriteBatch,mapViewport.Bounds);
-            DotSprite.text = DotSprite.Position.ToString();
-            DotSprite.draw(spriteBatch,scale);
-            //spriteBatch.Draw(_txDot, CharacterPosition * 0.1f,
-            //                null, Color.White, 0f, Vector2.Zero, 0.1f, SpriteEffects.None, 0);
-            //spriteBatch.Draw(_txBackGround, mapViewport.Bounds, Color.White);
+            CharacterSprite.draw(spriteBatch,scale);
+            LipsSprite.draw(spriteBatch, scale);
             spriteBatch.End();
             // TODO: Add your drawing code here
             GraphicsDevice.Viewport = originalViewPort;

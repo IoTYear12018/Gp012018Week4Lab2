@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Sprites
 {
+    public enum DirectionKeys { UP,Down,Left,Right}
+    
     public class SimpleSprite
     {
+        public Dictionary<DirectionKeys, Keys> dictionaryKeys = new Dictionary<DirectionKeys, Keys>();
         public Texture2D Image;
         public Vector2 Position;
         public Rectangle BoundingRect;
@@ -58,6 +62,12 @@ namespace Sprites
             if (Visible)
                 sp.Draw(Image, bound, Color.White);
         }
+        public void draw(SpriteBatch sp, Rectangle bound, bool alpha)
+        {
+            if (Visible && alpha)
+                sp.Draw(Image, bound,new Color(255,255,255,0));
+        }
+
         public void Move(Vector2 delta)
         {
             Position += delta;
