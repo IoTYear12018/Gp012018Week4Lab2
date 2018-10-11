@@ -171,8 +171,8 @@ namespace Week4Lab1
             
             GraphicsDevice.Viewport = mapViewport;
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-            frameSprite.draw(spriteBatch, mapViewport.Bounds);
-            BackGroundSprite.draw(spriteBatch,mapViewport.Bounds);
+            frameSprite.draw(spriteBatch, scale);
+            BackGroundSprite.draw(spriteBatch,scale);
             CharacterSprite.draw(spriteBatch,scale);
             LipsSprite.draw(spriteBatch, scale);
             spriteBatch.End();
